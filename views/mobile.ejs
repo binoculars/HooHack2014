@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+    <h1><%= title %></h1>
+    <p>Welcome to <%= title %></p>
+    <div id="display"></div>
+    <script type="text/javascript" src="/bower_components/sockjs-client/dist/sockjs.js"></script>
+    <script type="text/javascript" src="/bower_components/underscore/underscore-min.js"></script>
+    <script type="text/javascript">
+        var sock = new SockJS('/motion');
+        var deviceMotion = {};
+
+        var throttleUpdate = _.throttle(function () {
+            sock.send(deviceMotion);
+            document.getElementById("display").innerHTML = JSON.stringify(deviceMotion);
+        }, 250);
+
+        sock.onopen = function () {
+            window.addEventListener('devicemotion', function (e) {
+                deviceMotion = {
+                    'acc': e.accelerationIncludingGravity,
+                    'rot': e.rotationRate
+                };
+
+                throttleUpdate();
+            });
+        };
+    </script>
+</body>
+</html>

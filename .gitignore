@@ -1,1 +1,4 @@
-# Created by .gitignore support plugin (hsz.mobi)
+.idea
+public/bower_components
+node_modules
+npm-debug.log
