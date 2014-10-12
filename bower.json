@@ -14,6 +14,6 @@
   "dependencies": {
     "d3": "~3.4.12",
     "sockjs-client": "~0.3.4",
-    "angular": "~1.2.26"
+    "underscore": "~1.7.0"
   }
 }
