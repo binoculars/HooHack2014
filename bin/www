@@ -1,9 +1,31 @@
 #!/usr/bin/env node
 var debug = require('debug')('HooHack');
 var app = require('../app');
+var sockjs = require('sockjs');
+
+var connections = [];
+
+var motion = sockjs.createServer();
+motion.on('connection', function(conn) {
+    connections.push(conn);
+    var number = connections.length;
+    conn.write("Welcome, User " + number);
+    conn.on('data', function(message) {
+        for (var ii=0; ii < connections.length; ii++) {
+            connections[ii].write("User " + number + " says: " + message);
+        }
+    });
+    conn.on('close', function() {
+        for (var ii=0; ii < connections.length; ii++) {
+            connections[ii].write("User " + number + " has disconnected");
+        }
+    });
+});
 
 app.set('port', process.env.PORT || 3000);
 
 var server = app.listen(app.get('port'), function() {
   debug('Express server listening on port ' + server.address().port);
 });
+
+motion.installHandlers(server, {prefix:'/motion'});

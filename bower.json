@@ -2,8 +2,7 @@
   "name": "HooHack2014",
   "version": "0.0.0",
   "homepage": "https://github.com/binoculars/HooHack2014",
-  "authors": [
-  ],
+  "authors": [],
   "license": "MIT",
   "ignore": [
     "**/.*",
@@ -14,6 +13,7 @@
   ],
   "dependencies": {
     "d3": "~3.4.12",
-    "sockjs-client": "~0.3.4"
+    "sockjs-client": "~0.3.4",
+    "angular": "~1.2.26"
   }
 }
