@@ -36,7 +36,23 @@
               Object.keys(data).map(function(d) {
                   data[d].push(dataObj.acc[d]);
                   data[d].shift();
+                  paths[d].attr("d", lines[d]);
               });
+//
+//              lineGroup
+//                      .attr("transform", null)
+//                      //.transition()
+//                      //.duration(100)
+//                      //.ease("linear")
+//                      .attr("transform", "translate(" + x(-1) + ",0)");
+              //.each("end", tick);
+              // redraw the line, and slide it to the left
+
+//
+//              Object.keys(data).map(function(d) {
+//                  //paths[d].attr("d", lines[d]);
+//                  ///data[d].shift();
+//              });
           };
       </script>
 
@@ -135,30 +151,30 @@
                     .attr("d", lines[d]);
         });
 
-        tick();
+        //tick();
 
-        function tick() {
-
-            // push a new data point onto the back
-
+//        function tick() {
+//
+//            // push a new data point onto the back
+//
+////            Object.keys(data).map(function(d) {
+////                data[d].push(random());
+////            });
+//
+//            lineGroup
+//                    .attr("transform", null)
+//                    .transition()
+//                    .duration(100)
+//                    .ease("linear")
+//                    .attr("transform", "translate(" + x(-1) + ",0)")
+//                    .each("end", tick);
+//            // redraw the line, and slide it to the left
+//
+//
 //            Object.keys(data).map(function(d) {
-//                data[d].push(random());
+//                paths[d].attr("d", lines[d]);
+//                ///data[d].shift();
 //            });
-
-            lineGroup
-                    .attr("transform", null)
-                    .transition()
-                    .duration(100)
-                    .ease("linear")
-                    .attr("transform", "translate(" + x(-1) + ",0)")
-                    .each("end", tick);
-            // redraw the line, and slide it to the left
-
-
-            Object.keys(data).map(function(d) {
-                paths[d].attr("d", lines[d]);
-                ///data[d].shift();
-            });
         }
 
     </script>
