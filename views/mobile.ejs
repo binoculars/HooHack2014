@@ -15,9 +15,9 @@
         var deviceMotion = {};
 
         var throttleUpdate = _.throttle(function () {
-            sock.send(deviceMotion);
+            sock.send(JSON.stringify(deviceMotion));
             document.getElementById("display").innerHTML = JSON.stringify(deviceMotion);
-        }, 250);
+        }, 100);
 
         sock.onopen = function () {
             window.addEventListener('devicemotion', function (e) {

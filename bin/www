@@ -10,10 +10,10 @@ var motion = sockjs.createServer();
 motion.on('connection', function(conn) {
     connections.push(conn);
     var number = connections.length;
-    conn.write("Welcome, User " + number);
+    //conn.write("Welcome, User " + number);
     conn.on('data', function(message) {
         for (var ii=0; ii < connections.length; ii++) {
-            connections[ii].write("User " + number + " says: " + message);
+            connections[ii].write(message);
         }
     });
     conn.on('close', function() {
