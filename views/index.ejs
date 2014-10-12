@@ -1,64 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <title>Hand Watch</title>
+    <link rel="stylesheet" href=""/stylesheets/style.css" />
       <script src="/bower_components/d3/d3.js"></script>
-
 
       <script type="text/javascript" src="/bower_components/sockjs-client/dist/sockjs.js"></script>
       <script type="text/javascript" src="/bower_components/underscore/underscore-min.js"></script>
-      <script type="text/javascript">
-          var sock = new SockJS('/motion');
-
-
-          var n = 40,
-                  random = d3.random.normal(0, 0),
-                  random2 = d3.random.normal(0, 0),
-                  random3 = d3.random.normal(0, 0),
-                  data = {
-                      x: d3.range(n).map(random),
-                      y: d3.range(n).map(random2),
-                      z: d3.range(n).map(random3)
-                  };
-
-          sock.onmessage = function (e) {
-              //console.log(e);
-
-              var dataObj = JSON.parse(e.data);
-
-
-
-//              data.x.push(dataObj.acc.x);
-//              data.y.push(dataObj.acc.y);
-//              data.z.push(dataObj.acc.z);
-
-              Object.keys(data).map(function(d) {
-                  data[d].push(dataObj.acc[d]);
-                  data[d].shift();
-                  paths[d].attr("d", lines[d]);
-              });
-//
-//              lineGroup
-//                      .attr("transform", null)
-//                      //.transition()
-//                      //.duration(100)
-//                      //.ease("linear")
-//                      .attr("transform", "translate(" + x(-1) + ",0)");
-              //.each("end", tick);
-              // redraw the line, and slide it to the left
-
-//
-//              Object.keys(data).map(function(d) {
-//                  //paths[d].attr("d", lines[d]);
-//                  ///data[d].shift();
-//              });
-          };
-      </script>
-
 
       <style>
-
           svg {
               font: 10px sans-serif;
           }
@@ -66,19 +16,15 @@
           .line {
               fill: none;
               stroke: #000;
-              stroke-width: 1.5px;
+              stroke-width: 2px;
           }
 
-          .linex {
+          .lineacc {
               stroke: red;
           }
 
-          .liney {
-              stroke: green;
-          }
-
-          .linez {
-              stroke: blue;
+          .linerot {
+              stroke: steelblue;
           }
 
           .axis path,
@@ -87,16 +33,21 @@
               stroke: #000;
               shape-rendering: crispEdges;
           }
-
       </style>
   </head>
   <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+    <h1>Handwatch Motion</h1>
 
     <script>
+        var n = 40,
+            zeros = d3.random.normal(0, 0),
+            data = {
+                acc: d3.range(n).map(zeros),
+                rot: d3.range(n).map(zeros)
+            };
 
-
+        var lines = {},
+            paths = {};
 
         var margin = {top: 20, right: 20, bottom: 20, left: 40},
                 width = 960 - margin.left - margin.right,
@@ -107,9 +58,8 @@
                 .range([0, width]);
 
         var y = d3.scale.linear()
-                .domain([-25, 25])
+                .domain([-50, 50])
                 .range([height, 0]);
-
 
         var svg = d3.select("body").append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -132,52 +82,66 @@
                 .attr("class", "y axis")
                 .call(d3.svg.axis().scale(y).orient("left"));
 
+        svg.append("text")
+                .attr("transform", "translate(" + 5 + "," + 10 + ")")
+                .attr("dy", ".35em")
+                .attr("text-anchor", "start")
+                .style("fill", "red")
+                .text("_____ Acceleration");
+
+        svg.append("text")
+                .attr("transform", "translate(" + 5 + "," + 20 + ")")
+                .attr("dy", ".35em")
+                .attr("text-anchor", "start")
+                .style("fill", "steelblue")
+                .text("_____ Rotation");
+
         var lineGroup = svg.append("g")
                 .attr("class", "lines");
 
-        var lines = {},
-            paths = {};
-
-        Object.keys(data).forEach(function(d) {
+        Object.keys(data).forEach(function (d) {
             lines[d] = d3.svg.line()
-                    .x(function(d, i) { return x(i); })
-                    .y(function(d, i) { return y(d); });
+                .x(function (d, i) {
+                    return x(i);
+                })
+                .y(function (d, i) {
+                    return y(d);
+                });
 
             paths[d] = lineGroup.append("g")
-                    .attr("clip-path", "url(#clip)")
-                    .append("path")
-                    .datum(data[d])
-                    .attr("class", "line line" + d)
-                    .attr("d", lines[d]);
+                .attr("clip-path", "url(#clip)")
+                .append("path")
+                .datum(data[d])
+                .attr("class", "line line" + d)
+                .attr("d", lines[d]);
         });
 
-        //tick();
+        var sock = new SockJS('/motion');
 
-//        function tick() {
-//
-//            // push a new data point onto the back
-//
-////            Object.keys(data).map(function(d) {
-////                data[d].push(random());
-////            });
-//
-//            lineGroup
-//                    .attr("transform", null)
-//                    .transition()
-//                    .duration(100)
-//                    .ease("linear")
-//                    .attr("transform", "translate(" + x(-1) + ",0)")
-//                    .each("end", tick);
-//            // redraw the line, and slide it to the left
-//
-//
-//            Object.keys(data).map(function(d) {
-//                paths[d].attr("d", lines[d]);
-//                ///data[d].shift();
-//            });
-        }
+        sock.onmessage = function (e) {
+            var dataObj = JSON.parse(e.data);
+            data.acc.push( // Take the root mean square of the acceleration vector and subtract gravity
+                Math.sqrt(
+                    Math.pow(dataObj.acc.x, 2) +
+                    Math.pow(dataObj.acc.y, 2) +
+                    Math.pow(dataObj.acc.z, 2)
+                ) - 9.82
+            );
 
+            data.rot.push( // Take the root mean square of the rotation vector
+                Math.sqrt(
+                    Math.pow(dataObj.rot.alpha / 360 * 25, 2) +
+                    Math.pow(dataObj.rot.beta / 360 * 25, 2) +
+                    Math.pow(dataObj.rot.gamma / 360 * 25, 2)
+                )
+            );
+
+            // Delete the first value and update the path
+            Object.keys(data).map(function (d) {
+                data[d].shift();
+                paths[d].attr("d", lines[d]);
+            });
+        };
     </script>
-
   </body>
 </html>
