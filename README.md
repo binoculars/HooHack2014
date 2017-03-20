@@ -1,5 +1,7 @@
 HooHack2014
 ===========
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/binoculars/HooHack2014.svg)](https://greenkeeper.io/)
 1. Clone the repo
 1. Install Node.js
 1. cd into the directory of the repo
